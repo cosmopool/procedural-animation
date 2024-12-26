@@ -1,7 +1,5 @@
 const std = @import("std");
-const rl = @cImport({
-    @cInclude("raylib.h");
-});
+const rl = @import("raylib.zig").raylib;
 const print = std.debug.print;
 const assert = std.debug.assert;
 const Allocator = std.mem.Allocator;
