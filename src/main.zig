@@ -11,7 +11,6 @@ const page_allocator = std.heap.page_allocator;
 
 // Initialization
 //--------------------------------------------------------------------------------------
-var camera = rl.Camera{};
 
 var cursorEnabled: bool = true;
 //--------------------------------------------------------------------------------------
@@ -22,7 +21,7 @@ pub fn main() !void {
     rl.InitWindow(Screen.width, Screen.height, "procedural animation test");
     rl.SetTargetFPS(60);
     try Model.init();
-    try Camera.init(&page_allocator, &camera);
+    try Camera.init(&page_allocator);
     //--------------------------------------------------------------------------------------
 
     // Game loop
@@ -43,15 +42,15 @@ pub fn main() !void {
 }
 
 fn update(dt: f32) !void {
-    try Camera.updateCamera(&camera, dt);
-    try Model.selectOnClick(&camera);
+    try Camera.updateCamera(dt);
+    try Model.selectOnClick(&Camera.current);
 }
 
 fn draw() !void {
     rl.BeginDrawing();
     rl.ClearBackground(rl.RAYWHITE);
 
-    rl.BeginMode3D(camera);
+    rl.BeginMode3D(Camera.current);
     rl.DrawGrid(5, 1);
     try Model.draw();
     rl.EndMode3D();

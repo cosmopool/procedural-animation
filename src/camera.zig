@@ -2,20 +2,22 @@ const std = @import("std");
 const rl = @import("raylib.zig").raylib;
 const Screen = @import("screen.zig");
 
+pub var current = rl.Camera{};
+
 const cameraSensitivity = 10;
 
 var tempBuff: []u8 = undefined;
 var cameraPosString: []u8 = undefined;
 var targetPosString: []u8 = undefined;
 
-pub fn init(allocator: *const std.mem.Allocator, camera: *rl.Camera) !void {
+pub fn init(allocator: *const std.mem.Allocator) !void {
     tempBuff = try allocator.alloc(u8, 200);
 
-    camera.position = rl.Vector3{ .x = 3, .y = 4, .z = 3 };
-    camera.target = rl.Vector3{ .x = 0, .y = 0, .z = 0 };
-    camera.up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    camera.fovy = 45.0;
-    camera.projection = rl.CAMERA_PERSPECTIVE;
+    current.position = rl.Vector3{ .x = 3, .y = 4, .z = 3 };
+    current.target = rl.Vector3{ .x = 0, .y = 0, .z = 0 };
+    current.up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    current.fovy = 45.0;
+    current.projection = rl.CAMERA_PERSPECTIVE;
 }
 
 pub fn deinit(allocator: *const std.mem.Allocator) !void {
@@ -23,17 +25,17 @@ pub fn deinit(allocator: *const std.mem.Allocator) !void {
     // allocator.destroy(&tempBuff);
 }
 
-pub fn updateCamera(camera: *rl.Camera, dt: f32) !void {
-    cameraPosString = try std.fmt.bufPrint(tempBuff, "camera | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.position.x, camera.position.y, camera.position.z });
-    targetPosString = try std.fmt.bufPrint(tempBuff, "target | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.target.x, camera.target.y, camera.target.z });
+pub fn updateCamera(dt: f32) !void {
+    cameraPosString = try std.fmt.bufPrint(tempBuff, "camera | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ current.position.x, current.position.y, current.position.z });
+    targetPosString = try std.fmt.bufPrint(tempBuff, "target | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ current.target.x, current.target.y, current.target.z });
 
     const mouseWheel = rl.GetMouseWheelMove();
     if (mouseWheel != 0) {
-        const forward = rl.Vector3Normalize(rl.Vector3Subtract(camera.target, camera.position));
+        const forward = rl.Vector3Normalize(rl.Vector3Subtract(current.target, current.position));
         const move = rl.Vector3Scale(forward, mouseWheel * dt * cameraSensitivity);
 
-        camera.position = rl.Vector3Add(camera.position, move);
-        camera.target = rl.Vector3Add(camera.target, move);
+        current.position = rl.Vector3Add(current.position, move);
+        current.target = rl.Vector3Add(current.target, move);
 
         return;
     }
@@ -44,8 +46,8 @@ pub fn updateCamera(camera: *rl.Camera, dt: f32) !void {
     const displacementX = mouseDelta.x * dt * -1;
     const displacementY = mouseDelta.y * dt * -1;
 
-    const up = rl.Vector3Normalize(camera.up);
-    const forward = rl.Vector3Normalize(rl.Vector3Subtract(camera.target, camera.position));
+    const up = rl.Vector3Normalize(current.up);
+    const forward = rl.Vector3Normalize(rl.Vector3Subtract(current.target, current.position));
     const right = rl.Vector3Normalize(rl.Vector3CrossProduct(forward, up));
 
     if (rl.IsKeyDown(rl.KEY_LEFT_SHIFT)) {
@@ -55,16 +57,16 @@ pub fn updateCamera(camera: *rl.Camera, dt: f32) !void {
         const updatedRight = rl.Vector3Scale(right, displacementX);
         const move = rl.Vector3Add(updatedUp, updatedRight);
 
-        camera.position = rl.Vector3Add(camera.position, move);
-        camera.target = rl.Vector3Add(camera.target, move);
+        current.position = rl.Vector3Add(current.position, move);
+        current.target = rl.Vector3Add(current.target, move);
     } else {
         // rotation around target
 
-        var targetPosition = rl.Vector3Subtract(camera.target, camera.position);
+        var targetPosition = rl.Vector3Subtract(current.target, current.position);
         targetPosition = rl.Vector3RotateByAxisAngle(targetPosition, up, displacementX * rl.DEG2RAD * cameraSensitivity);
         targetPosition = rl.Vector3RotateByAxisAngle(targetPosition, right, displacementY * rl.DEG2RAD * cameraSensitivity);
 
-        camera.position = rl.Vector3Subtract(camera.target, targetPosition);
+        current.position = rl.Vector3Subtract(current.target, targetPosition);
     }
 }
 
