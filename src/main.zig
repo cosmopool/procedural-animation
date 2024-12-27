@@ -13,7 +13,6 @@ const page_allocator = std.heap.page_allocator;
 //--------------------------------------------------------------------------------------
 var camera = rl.Camera{};
 
-var cameraMode: bool = false;
 var cursorEnabled: bool = true;
 //--------------------------------------------------------------------------------------
 
@@ -44,7 +43,6 @@ pub fn main() !void {
 }
 
 fn update(dt: f32) !void {
-    if (rl.IsKeyPressed(rl.KEY_C)) cameraMode = !cameraMode;
     try Camera.updateCamera(&camera, dt);
     try Model.selectOnClick(&camera);
 }
