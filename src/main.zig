@@ -1,5 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib.zig").raylib;
+const Camera = @import("camera.zig");
 const print = std.debug.print;
 const assert = std.debug.assert;
 const Allocator = std.mem.Allocator;
@@ -27,13 +28,13 @@ pub fn main() !void {
     //--------------------------------------------------------------------------------------
     rl.InitWindow(screenWidth, screenHeight, "procedural animation test");
     rl.SetTargetFPS(60);
-    rl.DisableCursor();
     try init();
     //--------------------------------------------------------------------------------------
 
     while (!rl.WindowShouldClose()) {
+        const dt = rl.GetFrameTime();
         if (rl.IsKeyPressed(rl.KEY_C)) cameraMode = !cameraMode;
-        try update();
+        try update(dt);
         try draw();
     }
 
@@ -65,14 +66,14 @@ fn init() !void {
     }
 
     camera.position = rl.Vector3{ .x = 3, .y = 4, .z = 3 };
-    camera.target = rl.Vector3{ .x = -0.5, .y = -0.8, .z = -1 };
+    camera.target = rl.Vector3{ .x = 0, .y = 0, .z = 0 };
     camera.up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
     camera.fovy = 45.0;
     camera.projection = rl.CAMERA_PERSPECTIVE;
 }
 
-fn update() !void {
-    if (cameraMode) rl.UpdateCamera(&camera, rl.CAMERA_FREE);
+fn update(dt: f32) !void {
+    try Camera.updateCamera(&camera, dt);
 
     // Select model on mouse click
     if (rl.IsMouseButtonPressed(rl.MOUSE_BUTTON_LEFT)) {
@@ -111,7 +112,6 @@ fn draw() !void {
     const targetPos = try std.fmt.allocPrint(page_allocator, "target | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.target.x, camera.target.y, camera.target.z });
     rl.DrawText(cameraPos.ptr, screenWidth - 160, screenHeight - 30, 10, rl.BLACK);
     rl.DrawText(targetPos.ptr, screenWidth - 160, screenHeight - 20, 10, rl.BLACK);
-    rl.DrawText("Press 'C' to toggle camera mode", 10, screenHeight - 20, 10, rl.BLACK);
     rl.DrawFPS(10, 10);
     rl.EndDrawing();
 }
