@@ -9,12 +9,6 @@ const assert = std.debug.assert;
 const Allocator = std.mem.Allocator;
 const page_allocator = std.heap.page_allocator;
 
-// Initialization
-//--------------------------------------------------------------------------------------
-
-var cursorEnabled: bool = true;
-//--------------------------------------------------------------------------------------
-
 pub fn main() !void {
     // Initialization
     //--------------------------------------------------------------------------------------
