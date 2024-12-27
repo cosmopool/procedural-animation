@@ -1,8 +1,32 @@
+const std = @import("std");
 const rl = @import("raylib.zig").raylib;
+const Screen = @import("screen.zig");
 
 const cameraSensitivity = 10;
 
+var tempBuff: []u8 = undefined;
+var cameraPosString: []u8 = undefined;
+var targetPosString: []u8 = undefined;
+
+pub fn init(allocator: *const std.mem.Allocator, camera: *rl.Camera) !void {
+    tempBuff = try allocator.alloc(u8, 200);
+
+    camera.position = rl.Vector3{ .x = 3, .y = 4, .z = 3 };
+    camera.target = rl.Vector3{ .x = 0, .y = 0, .z = 0 };
+    camera.up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    camera.fovy = 45.0;
+    camera.projection = rl.CAMERA_PERSPECTIVE;
+}
+
+pub fn deinit(allocator: *const std.mem.Allocator) !void {
+    _ = allocator; // autofix
+    // allocator.destroy(&tempBuff);
+}
+
 pub fn updateCamera(camera: *rl.Camera, dt: f32) !void {
+    cameraPosString = try std.fmt.bufPrint(tempBuff, "camera | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.position.x, camera.position.y, camera.position.z });
+    targetPosString = try std.fmt.bufPrint(tempBuff, "target | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.target.x, camera.target.y, camera.target.z });
+
     const mouseWheel = rl.GetMouseWheelMove();
     if (mouseWheel != 0) {
         const forward = rl.Vector3Normalize(rl.Vector3Subtract(camera.target, camera.position));
@@ -42,4 +66,9 @@ pub fn updateCamera(camera: *rl.Camera, dt: f32) !void {
 
         camera.position = rl.Vector3Subtract(camera.target, targetPosition);
     }
+}
+
+pub fn draw() !void {
+    rl.DrawText(cameraPosString.ptr, Screen.width - 160, Screen.height - 30, 10, rl.BLACK);
+    rl.DrawText(targetPosString.ptr, Screen.width - 160, Screen.height - 20, 10, rl.BLACK);
 }

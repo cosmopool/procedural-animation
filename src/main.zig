@@ -28,22 +28,21 @@ pub fn main() !void {
     rl.InitWindow(Screen.width, Screen.height, "procedural animation test");
     rl.SetTargetFPS(60);
     try init();
+    try Camera.init(&page_allocator, &camera);
     //--------------------------------------------------------------------------------------
 
+    // Game loop
+    //--------------------------------------------------------------------------------------
     while (!rl.WindowShouldClose()) {
         const dt = rl.GetFrameTime();
-        if (rl.IsKeyPressed(rl.KEY_C)) cameraMode = !cameraMode;
         try update(dt);
         try draw();
     }
+    //--------------------------------------------------------------------------------------
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    for (0..maxNumModels) |idx| {
-        const model = models[idx];
-        if (model == null) break;
-        rl.UnloadModel(model.?);
-    }
+    try Camera.deinit(&page_allocator);
     rl.CloseWindow();
     //--------------------------------------------------------------------------------------
 }
@@ -63,15 +62,10 @@ fn init() !void {
         bounds[idx] = rl.GetMeshBoundingBox(models[idx].?.meshes[0]);
         idx += 1;
     }
-
-    camera.position = rl.Vector3{ .x = 3, .y = 4, .z = 3 };
-    camera.target = rl.Vector3{ .x = 0, .y = 0, .z = 0 };
-    camera.up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    camera.fovy = 45.0;
-    camera.projection = rl.CAMERA_PERSPECTIVE;
 }
 
 fn update(dt: f32) !void {
+    if (rl.IsKeyPressed(rl.KEY_C)) cameraMode = !cameraMode;
     try Camera.updateCamera(&camera, dt);
 
     // Select model on mouse click
@@ -107,10 +101,7 @@ fn draw() !void {
     if (selected != null) rl.DrawBoundingBox(selected.?.*, rl.GREEN);
     rl.EndMode3D();
 
-    const cameraPos = try std.fmt.allocPrint(page_allocator, "camera | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.position.x, camera.position.y, camera.position.z });
-    const targetPos = try std.fmt.allocPrint(page_allocator, "target | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.target.x, camera.target.y, camera.target.z });
-    rl.DrawText(cameraPos.ptr, Screen.width - 160, Screen.height - 30, 10, rl.BLACK);
-    rl.DrawText(targetPos.ptr, Screen.width - 160, Screen.height - 20, 10, rl.BLACK);
+    try Camera.draw();
     rl.DrawFPS(10, 10);
     rl.EndDrawing();
 }
