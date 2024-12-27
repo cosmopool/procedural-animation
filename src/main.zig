@@ -1,6 +1,8 @@
 const std = @import("std");
 const rl = @import("raylib.zig").raylib;
 const Camera = @import("camera.zig");
+const Screen = @import("screen.zig");
+
 const print = std.debug.print;
 const assert = std.debug.assert;
 const Allocator = std.mem.Allocator;
@@ -8,9 +10,6 @@ const page_allocator = std.heap.page_allocator;
 
 // Initialization
 //--------------------------------------------------------------------------------------
-const screenWidth = 800;
-const screenHeight = 600;
-
 var camera = rl.Camera{};
 
 const maxNumModels = 1000;
@@ -26,7 +25,7 @@ var cursorEnabled: bool = true;
 pub fn main() !void {
     // Initialization
     //--------------------------------------------------------------------------------------
-    rl.InitWindow(screenWidth, screenHeight, "procedural animation test");
+    rl.InitWindow(Screen.width, Screen.height, "procedural animation test");
     rl.SetTargetFPS(60);
     try init();
     //--------------------------------------------------------------------------------------
@@ -110,8 +109,8 @@ fn draw() !void {
 
     const cameraPos = try std.fmt.allocPrint(page_allocator, "camera | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.position.x, camera.position.y, camera.position.z });
     const targetPos = try std.fmt.allocPrint(page_allocator, "target | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ camera.target.x, camera.target.y, camera.target.z });
-    rl.DrawText(cameraPos.ptr, screenWidth - 160, screenHeight - 30, 10, rl.BLACK);
-    rl.DrawText(targetPos.ptr, screenWidth - 160, screenHeight - 20, 10, rl.BLACK);
+    rl.DrawText(cameraPos.ptr, Screen.width - 160, Screen.height - 30, 10, rl.BLACK);
+    rl.DrawText(targetPos.ptr, Screen.width - 160, Screen.height - 20, 10, rl.BLACK);
     rl.DrawFPS(10, 10);
     rl.EndDrawing();
 }
