@@ -11,17 +11,16 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const raylib_optimize = b.option(
-        std.builtin.OptimizeMode,
-        "raylib-optimize",
-        "Prioritize performance, safety, or binary size (-O flag), defaults to value of optimize option",
-    ) orelse optimize;
-
-    const raylib_dep = b.dependency("raylib", .{
+    const raylib_dep = b.dependency("raylib-zig", .{
         .target = target,
-        .optimize = raylib_optimize,
+        .optimize = optimize,
+        .shared = true,
     });
-    exe.linkLibrary(raylib_dep.artifact("raylib"));
+    const raylib = raylib_dep.module("raylib");
+    const raylib_artifact = raylib_dep.artifact("raylib");
+    exe.linkLibrary(raylib_artifact);
+    exe.root_module.addImport("raylib", raylib);
+
     b.installArtifact(exe);
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());

@@ -1,5 +1,5 @@
 const std = @import("std");
-const rl = @import("raylib.zig").raylib;
+const rl = @import("raylib");
 const Camera = @import("camera.zig");
 const Model = @import("models.zig");
 const Screen = @import("screen.zig");
@@ -12,16 +12,16 @@ const page_allocator = std.heap.page_allocator;
 pub fn main() !void {
     //--------------------------------------------------------------------------------------
     // Initialization
-    rl.InitWindow(Screen.width, Screen.height, "procedural animation test");
-    rl.SetTargetFPS(60);
+    rl.initWindow(Screen.width, Screen.height, "procedural animation test");
+    rl.setTargetFPS(60);
     try Model.init();
     try Camera.init(&page_allocator);
     //--------------------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------------------
     // Game loop
-    while (!rl.WindowShouldClose()) {
-        const dt = rl.GetFrameTime();
+    while (!rl.windowShouldClose()) {
+        const dt = rl.getFrameTime();
         try update(dt);
         try draw();
     }
@@ -31,7 +31,7 @@ pub fn main() !void {
     // De-Initialization
     try Model.deinit();
     try Camera.deinit(&page_allocator);
-    rl.CloseWindow();
+    rl.closeWindow();
     //--------------------------------------------------------------------------------------
 }
 
@@ -41,15 +41,15 @@ fn update(dt: f32) !void {
 }
 
 fn draw() !void {
-    rl.BeginDrawing();
-    rl.ClearBackground(rl.RAYWHITE);
+    rl.beginDrawing();
+    rl.clearBackground(rl.Color.ray_white);
 
-    rl.BeginMode3D(Camera.current);
-    rl.DrawGrid(5, 1);
+    rl.beginMode3D(Camera.current);
+    rl.drawGrid(5, 1);
     try Model.draw();
-    rl.EndMode3D();
+    rl.endMode3D();
 
     try Camera.draw();
-    rl.DrawFPS(10, 10);
-    rl.EndDrawing();
+    rl.drawFPS(10, 10);
+    rl.endDrawing();
 }
