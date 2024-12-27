@@ -10,16 +10,16 @@ const Allocator = std.mem.Allocator;
 const page_allocator = std.heap.page_allocator;
 
 pub fn main() !void {
-    // Initialization
     //--------------------------------------------------------------------------------------
+    // Initialization
     rl.InitWindow(Screen.width, Screen.height, "procedural animation test");
     rl.SetTargetFPS(60);
     try Model.init();
     try Camera.init(&page_allocator);
     //--------------------------------------------------------------------------------------
 
-    // Game loop
     //--------------------------------------------------------------------------------------
+    // Game loop
     while (!rl.WindowShouldClose()) {
         const dt = rl.GetFrameTime();
         try update(dt);
@@ -27,8 +27,8 @@ pub fn main() !void {
     }
     //--------------------------------------------------------------------------------------
 
-    // De-Initialization
     //--------------------------------------------------------------------------------------
+    // De-Initialization
     try Model.deinit();
     try Camera.deinit(&page_allocator);
     rl.CloseWindow();
