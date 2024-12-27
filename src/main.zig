@@ -36,7 +36,7 @@ pub fn main() !void {
 }
 
 fn update(dt: f32) !void {
-    try Camera.updateCamera(dt);
+    try Camera.update(dt);
     try Model.selectOnClick(&Camera.current);
 }
 

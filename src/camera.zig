@@ -25,7 +25,7 @@ pub fn deinit(allocator: *const std.mem.Allocator) !void {
     // allocator.destroy(&tempBuff);
 }
 
-pub fn updateCamera(dt: f32) !void {
+pub fn update(dt: f32) !void {
     cameraPosString = try std.fmt.bufPrint(tempBuff, "camera | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ current.position.x, current.position.y, current.position.z });
     targetPosString = try std.fmt.bufPrint(tempBuff, "target | x: {d:.1}, y: {d:.1}, z: {d:.1}", .{ current.target.x, current.target.y, current.target.z });
 
