@@ -28,7 +28,8 @@ pub fn init(allocator: *const std.mem.Allocator) !void {
 }
 
 pub fn deinit(allocator: *const std.mem.Allocator) !void {
-    _ = allocator; // autofix
+    allocator.free(tempBuffA);
+    allocator.free(tempBuffB);
 }
 
 pub fn update(dt: f32) !void {
