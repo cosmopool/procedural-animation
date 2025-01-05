@@ -6,7 +6,7 @@ const Camera = rl.Camera;
 const BoundingBox = rl.BoundingBox;
 const Color = rl.Color;
 
-const Model = enum { spider };
+const ModelType = enum { spider, floor };
 
 pub var selected: ?*const BoundingBox = null;
 
@@ -19,16 +19,24 @@ var paths: [max][:0]const u8 = undefined;
 
 /// Load all models from disk
 pub fn init() !void {
-    paths[@intFromEnum(Model.spider)] = "resources/models/spider.obj";
+    paths[@intFromEnum(ModelType.spider)] = "resources/models/spider.gltf";
 
-    const modelsName = std.enums.values(Model);
-    for (0..modelsName.len) |i| {
-        const enumVal = modelsName[i];
-        const idx = @intFromEnum(enumVal);
+    const modelsEnumValues = std.enums.values(ModelType);
+    for (0..modelsEnumValues.len) |i| {
+        const modelType = modelsEnumValues[i];
+        const idx = @intFromEnum(modelType);
+        if (modelType == .floor) continue;
         models[idx] = rl.loadModel(paths[idx]);
-        models[idx].?.materials[0].maps[@intFromEnum(rl.MaterialMapIndex.albedo)].color = Color.gray;
+        models[idx].?.materials[0].maps[@intFromEnum(rl.MaterialMapIndex.albedo)].color = Color.blue;
         bounds[idx] = rl.getMeshBoundingBox(models[idx].?.meshes[0]);
     }
+
+    const floorModel = rl.Model.fromMesh(rl.genMeshPlane(400, 400, 2, 2));
+    floorModel.materials[0].maps[@intFromEnum(rl.MaterialMapIndex.albedo)].color = Color.light_gray;
+    models[@intFromEnum(ModelType.floor)] = floorModel;
+    bounds[@intFromEnum(ModelType.floor)] = rl.getMeshBoundingBox(floorModel.meshes[0]);
+    std.debug.assert(models[@intFromEnum(ModelType.floor)] != null);
+    std.debug.assert(bounds[@intFromEnum(ModelType.floor)] != null);
 }
 
 pub fn deinit() !void {
@@ -68,5 +76,7 @@ pub fn draw() !void {
         };
         rl.drawModel(model.?, position, 1.0, Color.white);
     }
+    const floor: rl.Model = models[@intFromEnum(ModelType.floor)] orelse unreachable;
+    rl.drawMesh(floor.meshes[0], floor.materials[0], rl.Matrix.identity());
     if (selected != null) rl.drawBoundingBox(selected.?.*, Color.green);
 }

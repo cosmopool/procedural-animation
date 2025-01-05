@@ -45,7 +45,7 @@ fn draw() !void {
     rl.clearBackground(rl.Color.ray_white);
 
     rl.beginMode3D(Camera.current);
-    rl.drawGrid(5, 1);
+    rl.drawGrid(120, 1);
     try Model.draw();
     rl.endMode3D();
 
