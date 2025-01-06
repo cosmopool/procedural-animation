@@ -11,6 +11,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    // raylib bindings
     const raylib_dep = b.dependency("raylib-zig", .{
         .target = target,
         .optimize = optimize,
@@ -20,6 +21,13 @@ pub fn build(b: *std.Build) void {
     const raylib_artifact = raylib_dep.artifact("raylib");
     exe.linkLibrary(raylib_artifact);
     exe.root_module.addImport("raylib", raylib);
+
+    // gltf parser
+    const zgltf = b.dependency("zgltf", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    exe.root_module.addImport("zgltf", zgltf.module("zgltf"));
 
     b.installArtifact(exe);
     const run_cmd = b.addRunArtifact(exe);
@@ -36,6 +44,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    exe_unit_tests.root_module.addImport("zgltf", zgltf.module("zgltf"));
     const run_exe_unit_tests = b.addRunArtifact(exe_unit_tests);
 
     const test_step = b.step("test", "Run unit tests");

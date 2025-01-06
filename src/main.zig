@@ -14,7 +14,7 @@ pub fn main() !void {
     // Initialization
     rl.initWindow(Screen.width, Screen.height, "procedural animation test");
     rl.setTargetFPS(60);
-    try Model.init();
+    try Model.init(page_allocator);
     try Camera.init(&page_allocator);
     //--------------------------------------------------------------------------------------
 

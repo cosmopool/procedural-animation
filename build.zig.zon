@@ -8,6 +8,16 @@
             .url = "git+https://github.com/Not-Nik/raylib-zig?ref=devel#845af357e4bc5ed8d008a8bb64bd7c4b4906851d",
             .hash = "122081321a9b6653f90fee325553c9f64934f94b789e7ddbadf27f754a5e42537c4d",
         },
+        // original repo
+        // .zgltf = .{
+        //     .url = "https://github.com/kooparse/zgltf/archive/b8a821d5fc6d1cd2913cead6cc149f94cfbc92ae.tar.gz",
+        //     .hash = "1220ebbbf8f55960a27c4d0543463b26662b12d5d9d801abf2eba665859b9bfdbd15",
+        // },
+        // zig v0.13.0 compatible repo
+        .zgltf = .{
+            .url = "https://github.com/moomba42/zgltf?ref=main#7298b53d0cfd9019bf24ccb258c6c93047eaeef1",
+            .hash = "1220836e0bc24f6ea890a0edab9c93c27279317dbea93e784e170ca59c5832a5af1f",
+        },
     },
 
     .paths = .{
